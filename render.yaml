@@ -3,6 +3,7 @@ services:
     name: naukri-automation-backend
     env: python
     plan: free
+    runtime: "3.10"
     buildCommand: pip install -r requirements.txt && playwright install chromium
     startCommand: gunicorn --worker-class eventlet -w 1 --bind 0.0.0.0:$PORT backend.app:app
     envVars:
