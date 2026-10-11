@@ -20,7 +20,6 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_socketio import SocketIO, emit
 from werkzeug.utils import secure_filename
-import sqlite3
 import threading
 import time
 
@@ -41,6 +40,15 @@ try:
     from common.application_state import get_application_state_machine
     from common.validation import validate_profile_data, sanitize_login_credentials, ValidationError as ValidationErr
     from common.job_matcher import calculate_job_match_score, rank_jobs
+    from database import (
+        init_database, get_collection, create_session, get_active_session, delete_session, 
+        cleanup_expired_sessions, create_user, get_user_by_email, save_resume, get_latest_resume, 
+        cleanup_expired_resumes, save_profile, get_profile, delete_profile, save_application_state, 
+        get_application_state, delete_application_state, save_statistics, get_statistics, 
+        delete_statistics, delete_all_user_data, download_resume_from_gridfs, save_screenshot, 
+        get_latest_screenshot, cleanup_expired_screenshots, run_cleanup_tasks, 
+        start_cleanup_scheduler, stop_cleanup_scheduler
+    )
 except ImportError:
     print("Warning: Some common modules not available. Running in standalone mode.")
 
@@ -70,7 +78,6 @@ PROJECT_DIR = Path(__file__).parent.parent
 # Use Render's persistent disk if available (paid tier), otherwise use local paths (free tier)
 DATA_DIR = Path(os.environ.get('RENDER_DISK_MOUNT_PATH', PROJECT_DIR))
 
-DATABASE_PATH = DATA_DIR / "sessions.db"
 PROFILE_FILE = DATA_DIR / "profile.yaml"
 SESSION_FILE = DATA_DIR / "session_naukri.json"
 STATS_FILE = DATA_DIR / "application_stats.json"
@@ -88,57 +95,22 @@ SSL_CERT_DIR = os.environ.get('SSL_CERT_DIR', str(PROJECT_DIR / 'ssl_certs'))
 
 # Create necessary directories
 RESUME_DIR.mkdir(parents=True, exist_ok=True)
-DATABASE_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 # Global automation state
 automation_running = False
 automation_thread = None
 automation_process = None
 
+# Initialize database on startup
+try:
+    init_database()
+    # Start the cleanup scheduler
+    start_cleanup_scheduler()
+except Exception as e:
+    print(f"Warning: Database initialization failed: {e}")
 
-# Database Schema
-def init_database():
-    """Initialize SQLite database for session management."""
-    conn = sqlite3.connect(DATABASE_PATH)
-    cursor = conn.cursor()
-    
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS naukri_sessions (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            session_id TEXT UNIQUE NOT NULL,
-            created_at TIMESTAMP NOT NULL,
-            expires_at TIMESTAMP NOT NULL,
-            status TEXT NOT NULL,
-            browser_profile_path TEXT,
-            session_file_path TEXT
-        )
-    ''')
-    
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email TEXT UNIQUE NOT NULL,
-            created_at TIMESTAMP NOT NULL,
-            updated_at TIMESTAMP NOT NULL
-        )
-    ''')
-    
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS resumes (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER,
-            filename TEXT NOT NULL,
-            original_filename TEXT NOT NULL,
-            file_path TEXT NOT NULL,
-            parsed_data TEXT,
-            uploaded_at TIMESTAMP NOT NULL,
-            expires_at TIMESTAMP,
-            FOREIGN KEY (user_id) REFERENCES users (id)
-        )
-    ''')
-    
-    conn.commit()
-    conn.close()
+# User management (simplified - single user for now)
+CURRENT_USER_ID = "default_user"  # Will be replaced with actual user authentication later
 
 
 def cleanup_expired_sessions():
@@ -239,30 +211,22 @@ def health_check():
 def session_status():
     """Get current Naukri session status."""
     try:
-        conn = sqlite3.connect(DATABASE_PATH)
-        cursor = conn.cursor()
-
         now = datetime.now()
-
-        cursor.execute('''
-            SELECT session_id, created_at, expires_at, status
-            FROM naukri_sessions
-            WHERE expires_at > ?
-            ORDER BY created_at DESC
-            LIMIT 1
-        ''', (now,))
-
-        session = cursor.fetchone()
-        conn.close()
+        
+        # Get active session for current user
+        session = get_active_session(CURRENT_USER_ID)
 
         if session:
-            session_id, created_at, expires_at, status = session
-            # Convert string timestamps to datetime objects if needed
-            if isinstance(expires_at, str):
-                expires_at = datetime.fromisoformat(expires_at)
-            if isinstance(created_at, str):
-                created_at = datetime.fromisoformat(created_at)
-            time_remaining = (expires_at - now).total_seconds()
+            session_id = session.get('session_id')
+            created_at = session.get('created_at')
+            expires_at = session.get('expires_at')
+            status = session.get('status')
+            
+            # Calculate time remaining
+            if expires_at:
+                time_remaining = (expires_at - now).total_seconds()
+            else:
+                time_remaining = 0
 
             return jsonify({
                 'success': True,
@@ -1156,10 +1120,20 @@ def automation_status():
 
 @app.route('/api/session/cleanup', methods=['POST'])
 def manual_cleanup():
-    """Manually trigger cleanup of expired sessions."""
+    """Manually trigger cleanup of expired sessions, resumes, and screenshots."""
     try:
-        cleanup_expired_sessions()
-        return jsonify({'success': True, 'message': 'Cleanup completed'})
+        # Run all cleanup tasks
+        session_count = cleanup_expired_sessions()
+        resume_count = cleanup_expired_resumes()
+        screenshot_count = cleanup_expired_screenshots()
+
+        return jsonify({
+            'success': True,
+            'cleaned_sessions': session_count,
+            'cleaned_resumes': resume_count,
+            'cleaned_screenshots': screenshot_count,
+            'message': f'Cleaned {session_count} sessions, {resume_count} resumes, {screenshot_count} screenshots'
+        })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
@@ -1282,6 +1256,10 @@ if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     # Use debug mode only if explicitly enabled (not in production)
     debug_mode = os.environ.get('FLASK_DEBUG', 'false').lower() == 'true'
+
+    # Register shutdown handler to stop scheduler
+    import atexit
+    atexit.register(stop_cleanup_scheduler)
 
     if ENABLE_HTTPS:
         # Ensure SSL certificates exist

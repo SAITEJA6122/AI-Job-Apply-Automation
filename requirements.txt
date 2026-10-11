@@ -18,4 +18,4 @@ python-dotenv>=1.0.0
 requests>=2.31.0
 gunicorn>=21.0.0
 pymongo>=4.6.0
-boto3>=1.28.0
+apscheduler>=3.10.0
