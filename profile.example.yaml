@@ -1,0 +1,189 @@
+# ==========================================================================
+# YOUR APPLICATION PROFILE - EXAMPLE TEMPLATE
+# Copy this file to profile.yaml and fill in your real details
+# profile.yaml is gitignored, so your real details never get committed
+# ==========================================================================
+
+target_roles:
+  - "Full Stack Developer"
+  - "MERN Stack Developer"
+  - "React Developer"
+  - "Node.js Developer"
+  - "Frontend Developer"
+  - "Software Developer"
+  - "Software Engineer"
+  - "Web Developer"
+  - "Junior Software Developer"
+  - "Junior Software Engineer"
+  - "Junior Full Stack Developer"
+  - "Associate Software Engineer"
+  - "Associate Developer"
+  - "Graduate Software Engineer"
+  - "Trainee Software Engineer"
+  - "Software Engineer Trainee"
+  - "Frontend Engineer"
+  - "React.js Developer"
+  - "JavaScript Developer"
+  - "Backend Developer"
+
+# Keywords for role matching (edit as needed)
+role_required_keywords:
+  "Full Stack Developer": ["full stack", "fullstack", "mern", "mean stack", "software", "developer", "engineer", "web", "stack"]
+  "MERN Stack Developer": ["mern", "mern stack", "mean stack", "react", "node", "software", "developer", "engineer", "full", "stack"]
+  "React Developer": ["react", "reactjs", "react.js", "frontend", "javascript", "web", "software", "developer", "engineer"]
+  "Node.js Developer": ["node", "nodejs", "node.js", "backend", "javascript", "api", "server", "software", "developer", "engineer"]
+  "Frontend Developer": ["frontend", "front-end", "react", "angular", "vue", "javascript", "web", "software", "developer", "engineer"]
+  "Software Developer": ["software", "developer", "engineer", "web", "full", "stack", "mern", "react", "node", "frontend", "backend"]
+  "Software Engineer": ["software", "engineer", "developer", "web", "full", "stack", "mern", "react", "node", "frontend", "backend"]
+  "Web Developer": ["web", "developer", "engineer", "software", "full", "stack", "frontend", "backend", "mern", "react"]
+  "Junior Software Developer": ["junior", "software", "developer", "engineer", "fresher", "trainee", "web", "full", "stack"]
+  "Junior Software Engineer": ["junior", "software", "engineer", "developer", "fresher", "trainee", "web", "full", "stack"]
+  "Junior Full Stack Developer": ["junior", "full", "stack", "fullstack", "mern", "mean", "software", "developer", "engineer", "fresher"]
+  "Associate Software Engineer": ["associate", "software", "engineer", "developer", "fresher", "trainee", "web"]
+  "Associate Developer": ["associate", "developer", "software", "engineer", "fresher", "trainee", "web"]
+  "Graduate Software Engineer": ["graduate", "software", "engineer", "developer", "fresher", "trainee", "web"]
+  "Trainee Software Engineer": ["trainee", "software", "engineer", "developer", "fresher", "web"]
+  "Software Engineer Trainee": ["trainee", "software", "engineer", "developer", "fresher", "web"]
+  "Frontend Engineer": ["frontend", "front-end", "react", "angular", "vue", "javascript", "web", "software", "engineer", "developer"]
+  "React.js Developer": ["react", "reactjs", "react.js", "frontend", "javascript", "web", "software", "developer", "engineer"]
+  "JavaScript Developer": ["javascript", "js", "frontend", "backend", "full", "stack", "software", "developer", "engineer", "web"]
+  "Backend Developer": ["backend", "back-end", "node", "nodejs", "api", "server", "software", "developer", "engineer", "web"]
+
+# Role family groups for cross-role matching
+role_family_groups:
+  frontend_family:
+    - "Frontend Developer"
+    - "React Developer"
+    - "Frontend Engineer"
+    - "React.js Developer"
+    - "JavaScript Developer"
+  backend_family:
+    - "Backend Developer"
+    - "Node.js Developer"
+  fullstack_family:
+    - "Full Stack Developer"
+    - "MERN Stack Developer"
+    - "Junior Full Stack Developer"
+  general_software_family:
+    - "Software Developer"
+    - "Software Engineer"
+    - "Web Developer"
+    - "Junior Software Developer"
+    - "Junior Software Engineer"
+    - "Associate Software Engineer"
+    - "Associate Developer"
+    - "Graduate Software Engineer"
+    - "Trainee Software Engineer"
+    - "Software Engineer Trainee"
+
+# Exclude senior-level roles
+title_exclude_keywords:
+  - "senior"
+  - "sr"
+  - "sr."
+  - "lead"
+  - "principal"
+  - "staff"
+  - "manager"
+  - "architect"
+  - "director"
+  - "head"
+  - "experienced"
+  - "2+ years"
+  - "2 years"
+  - "3+ years"
+  - "3 years"
+  - "expert"
+  - "specialist"
+
+# Company filtering
+company_exclude:
+  - "company1"
+  - "company2"
+
+company_include_only: []  # Leave empty to include all companies
+
+# Experience range (years)
+seniority_floor_years: 0
+seniority_ceiling_years: 1
+
+# Location preferences
+preferred_locations:
+  - "Your City"
+  - "Your State"
+
+willing_to_relocate: true
+
+# Salary expectations (LPA)
+salary_floor_lpa: 2.5
+
+# Application limits
+stop_after_n_applications: 6
+pace_seconds_between_actions: 30
+
+# Human input timeout (seconds)
+human_input_timeout_seconds: 120
+
+# Job freshness settings
+job_freshness_days_phase1: 7
+job_freshness_days_phase2: 30
+
+# Browser mode: "minimized" or "visible"
+browser_mode: "minimized"
+
+# Safety settings
+stop_on_captcha: true
+stop_on_rate_limit: true
+stop_on_authentication_error: true
+emergency_stop_enabled: true
+
+# Privacy settings
+llm_data_sharing: false
+save_debug_artifacts: false
+
+# Retry settings
+max_retries: 2
+
+# Pagination
+max_pages_per_role: 5
+
+# Application limits
+max_applications_per_hour: 15
+max_applications_per_day: 20
+
+# Resume file name (must be in project directory)
+resume_file_name: "resume.pdf"
+
+# Personal details for screening questions
+current_ctc_lpa: 0
+expected_ctc_lpa: 3
+notice_period_days: 0
+experience_years: 0
+experience_months: 0
+
+# Skills
+skills:
+  - "JavaScript"
+  - "React"
+  - "Node.js"
+  - "Python"
+  - "HTML"
+  - "CSS"
+
+# Education
+education:
+  degree: "Bachelor of Technology"
+  field: "Computer Science"
+  institution: "Your University"
+  year: "2024"
+
+# Current employment
+currently_employed: false
+current_company: ""
+current_role: ""
+
+# Additional context for AI answers
+additional_context: |
+  Add any additional context about yourself that should be used
+  for answering screening questions. This will be provided to the
+  LLM to help answer questions accurately.

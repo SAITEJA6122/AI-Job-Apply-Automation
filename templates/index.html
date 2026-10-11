@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Naukri Job Automation Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #1a1a1a;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .header h1 {
+            font-size: 3em;
+            font-weight: 800;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+            position: relative;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            font-weight: 300;
+            position: relative;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+
+        .section h2 {
+            color: #1a1a1a;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section h2::before {
+            content: '';
+            width: 4px;
+            height: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #374151;
+            font-weight: 600;
+            font-size: 0.95em;
+            letter-spacing: 0.3px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+            line-height: 1.6;
+        }
+
+        .form-group select[multiple] {
+            height: 150px;
+        }
+
+        .btn {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 12px;
+            font-family: inherit;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(17, 153, 142, 0.5);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(235, 51, 73, 0.4);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(235, 51, 73, 0.5);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .stat-card h3 {
+            color: #1a1a1a;
+            font-size: 2.5em;
+            font-weight: 800;
+            margin-bottom: 5px;
+            letter-spacing: -1px;
+        }
+
+        .stat-card p {
+            color: #6b7280;
+            font-size: 0.95em;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            font-size: 0.95em;
+            letter-spacing: 0.3px;
+        }
+
+        .status-running {
+            background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(56, 239, 125, 0.4);
+        }
+
+        .status-stopped {
+            background: linear-gradient(135deg, #f45c43 0%, #eb3349 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(244, 92, 67, 0.4);
+        }
+
+        .status-indicator::before {
+            content: '';
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: white;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .alert {
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: none;
+            font-weight: 500;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border-color: #10b981;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border-color: #ef4444;
+        }
+
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .skill-tag {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .skill-tag:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .upload-area {
+            border: 3px dashed #d1d5db;
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+        }
+
+        .upload-area:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .upload-area input[type="file"] {
+            display: none;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            color: #6b7280;
+            font-size: 0.95em;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Naukri Job Automation</h1>
+            <p>Smart job applications with AI-powered automation</p>
+        </div>
+
+        <div class="content">
+            <!-- Status Section -->
+            <div class="section">
+                <div id="statusIndicator" class="status-indicator status-stopped">
+                    ⏹️ Automation Stopped
+                </div>
+                <button id="startBtn" class="btn btn-success" onclick="startAutomation()">▶️ Start Automation</button>
+                <button id="stopBtn" class="btn btn-danger" onclick="stopAutomation()" style="display: none;">⏹️ Stop Automation</button>
+            </div>
+
+            <!-- Alert Section -->
+            <div id="alertSuccess" class="alert alert-success"></div>
+            <div id="alertError" class="alert alert-error"></div>
+
+            <!-- Resume Upload Section -->
+            <div class="section">
+                <h2>📄 Upload Resume</h2>
+                <div class="upload-area" onclick="document.getElementById('resumeFile').click()">
+                    <div class="upload-icon">📁</div>
+                    <div class="upload-text">Click to upload your resume (PDF)</div>
+                    <input type="file" id="resumeFile" accept=".pdf,.doc,.docx" onchange="uploadResume()">
+                </div>
+            </div>
+
+            <!-- Profile Configuration Section -->
+            <div class="section">
+                <h2>⚙️ Profile Configuration</h2>
+                
+                <div class="form-group">
+                    <label>Target Roles (Select Multiple)</label>
+                    <select id="targetRoles" multiple size="6">
+                        <option value="Full Stack Developer">Full Stack Developer</option>
+                        <option value="MERN Stack Developer">MERN Stack Developer</option>
+                        <option value="React Developer">React Developer</option>
+                        <option value="Node.js Developer">Node.js Developer</option>
+                        <option value="Frontend Developer">Frontend Developer</option>
+                        <option value="Software Developer">Software Developer</option>
+                        <option value="Software Engineer">Software Engineer</option>
+                        <option value="Web Developer">Web Developer</option>
+                        <option value="Junior Software Developer">Junior Software Developer</option>
+                        <option value="Junior Software Engineer">Junior Software Engineer</option>
+                        <option value="Junior Full Stack Developer">Junior Full Stack Developer</option>
+                        <option value="Associate Software Engineer">Associate Software Engineer</option>
+                        <option value="Associate Developer">Associate Developer</option>
+                        <option value="Graduate Software Engineer">Graduate Software Engineer</option>
+                        <option value="Trainee Software Engineer">Trainee Software Engineer</option>
+                        <option value="Frontend Engineer">Frontend Engineer</option>
+                        <option value="React.js Developer">React.js Developer</option>
+                        <option value="JavaScript Developer">JavaScript Developer</option>
+                        <option value="Backend Developer">Backend Developer</option>
+                    </select>
+                    <small style="color: #6b7280; margin-top: 8px; display: block; font-weight: 500;">Hold Ctrl/Cmd to select multiple roles</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Experience (Years)</label>
+                    <input type="number" id="experienceYears" min="0" max="10" value="0" placeholder="e.g., 0">
+                </div>
+
+                <div class="form-group">
+                    <label>Expected CTC (LPA)</label>
+                    <input type="number" id="expectedCTC" min="0" step="0.5" value="3" placeholder="e.g., 3">
+                </div>
+
+                <div class="form-group">
+                    <label>Preferred Location</label>
+                    <input type="text" id="preferredLocation" placeholder="e.g., Hyderabad, Bangalore">
+                </div>
+
+                <div class="form-group">
+                    <label>Skills (comma-separated)</label>
+                    <input type="text" id="skills" placeholder="e.g., JavaScript, React, Node.js, Python">
+                    <div id="extractedSkills" class="skills-container"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Additional Context</label>
+                    <textarea id="additionalContext" placeholder="Any additional information about yourself..."></textarea>
+                </div>
+
+                <button class="btn btn-primary" onclick="saveProfile()">💾 Save Profile</button>
+            </div>
+
+            <!-- Statistics Section -->
+            <div class="section">
+                <h2>📊 Application Statistics</h2>
+                <div class="stats-grid" id="statsGrid">
+                    <div class="stat-card">
+                        <h3 id="totalApplied">0</h3>
+                        <p>Total Applied</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="totalSkipped">0</h3>
+                        <p>Total Skipped</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="totalErrors">0</h3>
+                        <p>Errors</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="successRate">0%</h3>
+                        <p>Success Rate</p>
+                    </div>
+                </div>
+                <div style="margin-top: 25px; display: flex; gap: 12px; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="loadStats()">🔄 Refresh Stats</button>
+                    <button class="btn btn-success" onclick="exportLog('csv')">📊 Export Log (CSV)</button>
+                    <button class="btn btn-success" onclick="exportLog('excel')">📊 Export Log (Excel)</button>
+                    <button class="btn btn-success" onclick="exportStats('csv')">� Export Stats (CSV)</button>
+                    <button class="btn btn-success" onclick="exportStats('excel')">📈 Export Stats (Excel)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load profile on page load
+        window.onload = function() {
+            loadProfile();
+            loadStats();
+            checkAutomationStatus();
+            setInterval(checkAutomationStatus, 5000);
+        };
+
+        function showAlert(message, type) {
+            const alertSuccess = document.getElementById('alertSuccess');
+            const alertError = document.getElementById('alertError');
+            
+            if (type === 'success') {
+                alertSuccess.textContent = message;
+                alertSuccess.style.display = 'block';
+                alertError.style.display = 'none';
+            } else {
+                alertError.textContent = message;
+                alertError.style.display = 'block';
+                alertSuccess.style.display = 'none';
+            }
+            
+            setTimeout(() => {
+                alertSuccess.style.display = 'none';
+                alertError.style.display = 'none';
+            }, 5000);
+        }
+
+        async function uploadResume() {
+            const fileInput = document.getElementById('resumeFile');
+            if (fileInput.files.length === 0) {
+                showAlert('Please select a resume file', 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('resume', fileInput.files[0]);
+
+            try {
+                const response = await fetch('/api/upload-resume', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('Resume uploaded and data extracted successfully!', 'success');
+                    
+                    // Auto-populate fields with extracted data
+                    if (result.resume_data) {
+                        const data = result.resume_data;
+                        
+                        // Populate skills
+                        if (data.skills && data.skills.length > 0) {
+                            document.getElementById('skills').value = data.skills.join(', ');
+                            // Show extracted skills as tags
+                            const skillsContainer = document.getElementById('extractedSkills');
+                            skillsContainer.innerHTML = data.skills.map(skill => 
+                                `<span class="skill-tag">${skill}</span>`
+                            ).join('');
+                        }
+                        
+                        // Populate experience
+                        if (data.experience_years > 0) {
+                            document.getElementById('experienceYears').value = data.experience_years;
+                        }
+                        
+                        // Add extracted info to context
+                        if (data.full_text) {
+                            const currentContext = document.getElementById('additionalContext').value;
+                            const extractedInfo = `\n\n[Auto-extracted from resume]\nName: ${data.name}\nEducation: ${data.education}\nSkills: ${data.skills.join(', ')}\nExperience: ${data.experience_years} years`;
+                            document.getElementById('additionalContext').value = currentContext + extractedInfo;
+                        }
+                    }
+                } else {
+                    showAlert(result.error, 'error');
+                }
+            } catch (error) {
+                showAlert('Error uploading resume: ' + error.message, 'error');
+            }
+        }
+
+        async function saveProfile() {
+            // Get selected roles
+            const roleSelect = document.getElementById('targetRoles');
+            const selectedRoles = Array.from(roleSelect.selectedOptions).map(option => option.value);
+            
+            if (selectedRoles.length === 0) {
+                showAlert('Please select at least one target role', 'error');
+                return;
+            }
+
+            const profile = {
+                target_roles: selectedRoles,
+                experience_years: parseInt(document.getElementById('experienceYears').value),
+                expected_ctc_lpa: parseFloat(document.getElementById('expectedCTC').value),
+                preferred_locations: [document.getElementById('preferredLocation').value],
+                skills: document.getElementById('skills').value.split(',').map(s => s.trim()).filter(s => s),
+                additional_context: document.getElementById('additionalContext').value
+            };
+
+            try {
+                const response = await fetch('/api/profile', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(profile)
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('Profile saved successfully! Selected ' + selectedRoles.length + ' roles.', 'success');
+                } else {
+                    showAlert(result.error, 'error');
+                }
+            } catch (error) {
+                showAlert('Error saving profile: ' + error.message, 'error');
+            }
+        }
+
+        async function loadProfile() {
+            try {
+                const response = await fetch('/api/profile');
+                const result = await response.json();
+                
+                if (result.success && result.profile) {
+                    const profile = result.profile;
+                    
+                    // Load roles
+                    if (profile.target_roles && profile.target_roles.length > 0) {
+                        const roleSelect = document.getElementById('targetRoles');
+                        Array.from(roleSelect.options).forEach(option => {
+                            option.selected = profile.target_roles.includes(option.value);
+                        });
+                    }
+                    
+                    if (profile.experience_years) {
+                        document.getElementById('experienceYears').value = profile.experience_years;
+                    }
+                    if (profile.expected_ctc_lpa) {
+                        document.getElementById('expectedCTC').value = profile.expected_ctc_lpa;
+                    }
+                    if (profile.preferred_locations && profile.preferred_locations.length > 0) {
+                        document.getElementById('preferredLocation').value = profile.preferred_locations[0];
+                    }
+                    if (profile.skills) {
+                        document.getElementById('skills').value = profile.skills.join(', ');
+                    }
+                    if (profile.additional_context) {
+                        document.getElementById('additionalContext').value = profile.additional_context;
+                    }
+                    
+                    // Show extracted skills if available
+                    if (profile.extracted_skills && profile.extracted_skills.length > 0) {
+                        const skillsContainer = document.getElementById('extractedSkills');
+                        skillsContainer.innerHTML = profile.extracted_skills.map(skill => 
+                            `<span class="skill-tag">${skill}</span>`
+                        ).join('');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const result = await response.json();
+                
+                if (result.success && result.stats) {
+                    const stats = result.stats;
+                    document.getElementById('totalApplied').textContent = stats.total_applied || 0;
+                    document.getElementById('totalSkipped').textContent = stats.total_skipped || 0;
+                    document.getElementById('totalErrors').textContent = stats.total_errors || 0;
+                    document.getElementById('successRate').textContent = (stats.success_rate || 0).toFixed(1) + '%';
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        async function startAutomation() {
+            try {
+                const response = await fetch('/api/automation/start', {
+                    method: 'POST'
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('Automation started!', 'success');
+                    checkAutomationStatus();
+                } else {
+                    showAlert(result.error, 'error');
+                }
+            } catch (error) {
+                showAlert('Error starting automation: ' + error.message, 'error');
+            }
+        }
+
+        async function checkAutomationStatus() {
+            try {
+                const response = await fetch('/api/automation/status');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const statusIndicator = document.getElementById('statusIndicator');
+                    const startBtn = document.getElementById('startBtn');
+                    const stopBtn = document.getElementById('stopBtn');
+                    
+                    if (result.running) {
+                        statusIndicator.className = 'status-indicator status-running';
+                        statusIndicator.textContent = '▶️ Automation Running';
+                        startBtn.style.display = 'none';
+                        stopBtn.style.display = 'inline-block';
+                    } else {
+                        statusIndicator.className = 'status-indicator status-stopped';
+                        statusIndicator.textContent = '⏹️ Automation Stopped';
+                        startBtn.style.display = 'inline-block';
+                        stopBtn.style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking status:', error);
+            }
+        }
+
+        function stopAutomation() {
+            showAlert('To stop automation, press Ctrl+C in the terminal running the web server', 'error');
+        }
+
+        async function exportLog(format) {
+            try {
+                const response = await fetch(`/api/export/log?format=${format}`);
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `applications_export_${new Date().toISOString().slice(0,10)}.${format === 'excel' ? 'xlsx' : 'csv'}`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    showAlert(`Log exported successfully as ${format.toUpperCase()}`, 'success');
+                } else {
+                    const result = await response.json();
+                    showAlert(result.error || 'Export failed', 'error');
+                }
+            } catch (error) {
+                showAlert('Error exporting log: ' + error.message, 'error');
+            }
+        }
+
+        async function exportStats(format) {
+            try {
+                const response = await fetch(`/api/export/stats?format=${format}`);
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `statistics_export_${new Date().toISOString().slice(0,10)}.${format === 'excel' ? 'xlsx' : 'csv'}`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    showAlert(`Statistics exported successfully as ${format.toUpperCase()}`, 'success');
+                } else {
+                    const result = await response.json();
+                    showAlert(result.error || 'Export failed', 'error');
+                }
+            } catch (error) {
+                showAlert('Error exporting statistics: ' + error.message, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: naukri-backend
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app/backend
+      - ./common:/app/common
+      - ./profile.yaml:/app/profile.yaml
+      - ./session_naukri.json:/app/session_naukri.json
+      - ./applications_log.csv:/app/applications_log.csv
+      - ./application_stats.json:/app/application_stats.json
+      - ./application_state.json:/app/application_state.json
+      - ./backend/resumes:/app/backend/resumes
+      - ./backend/sessions.db:/app/backend/sessions.db
+    environment:
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+      - PYTHONUNBUFFERED=1
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - naukri-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: naukri-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:5000
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - naukri-network
+
+networks:
+  naukri-network:
+    driver: bridge
