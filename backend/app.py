@@ -22,6 +22,7 @@ from flask_socketio import SocketIO, emit
 from werkzeug.utils import secure_filename
 import threading
 import time
+import sqlite3
 
 # Load environment variables from .env file
 try:
@@ -109,6 +110,7 @@ PROJECT_DIR = Path(__file__).parent.parent
 # Use Render's persistent disk if available (paid tier), otherwise use local paths (free tier)
 DATA_DIR = Path(os.environ.get('RENDER_DISK_MOUNT_PATH', PROJECT_DIR))
 
+DATABASE_PATH = DATA_DIR / "sessions.db"
 PROFILE_FILE = DATA_DIR / "profile.yaml"
 SESSION_FILE = DATA_DIR / "session_naukri.json"
 STATS_FILE = DATA_DIR / "application_stats.json"
@@ -126,23 +128,65 @@ SSL_CERT_DIR = os.environ.get('SSL_CERT_DIR', str(PROJECT_DIR / 'ssl_certs'))
 
 # Create necessary directories
 RESUME_DIR.mkdir(parents=True, exist_ok=True)
+DATABASE_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 # Global automation state
 automation_running = False
 automation_thread = None
 automation_process = None
 
-# Initialize database on startup (only if available)
-if init_database:
-    try:
-        init_database()
-        # Start the cleanup scheduler
-        if start_cleanup_scheduler:
-            start_cleanup_scheduler()
-    except Exception as e:
-        print(f"Warning: Database initialization failed: {e}")
-else:
-    print("Warning: Database module not available - running without database")
+
+# SQLite Database Schema
+def init_sqlite_database():
+    """Initialize SQLite database for session management."""
+    conn = sqlite3.connect(DATABASE_PATH)
+    cursor = conn.cursor()
+    
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS naukri_sessions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            session_id TEXT UNIQUE NOT NULL,
+            created_at TIMESTAMP NOT NULL,
+            expires_at TIMESTAMP NOT NULL,
+            status TEXT NOT NULL,
+            browser_profile_path TEXT,
+            session_file_path TEXT
+        )
+    ''')
+    
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT UNIQUE NOT NULL,
+            created_at TIMESTAMP NOT NULL,
+            updated_at TIMESTAMP NOT NULL
+        )
+    ''')
+    
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS resumes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            filename TEXT NOT NULL,
+            original_filename TEXT NOT NULL,
+            file_path TEXT NOT NULL,
+            parsed_data TEXT,
+            uploaded_at TIMESTAMP NOT NULL,
+            expires_at TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users (id)
+        )
+    ''')
+    
+    conn.commit()
+    conn.close()
+
+
+# Initialize database on startup
+try:
+    init_sqlite_database()
+    print("SQLite database initialized successfully")
+except Exception as e:
+    print(f"Warning: SQLite database initialization failed: {e}")
 
 # User management (simplified - single user for now)
 CURRENT_USER_ID = "default_user"  # Will be replaced with actual user authentication later
@@ -222,7 +266,7 @@ cleanup_thread.start()
 
 
 # Initialize database on startup
-init_database()
+init_sqlite_database()
 cleanup_expired_sessions()
 
 
