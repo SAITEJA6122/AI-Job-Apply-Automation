@@ -33,6 +33,37 @@ except ImportError:
 # Import existing project modules
 import sys
 sys.path.insert(0, str(Path(__file__).parent.parent))
+
+# Database functions - will be None if import fails
+init_database = None
+get_collection = None
+create_session = None
+get_active_session = None
+delete_session = None
+cleanup_expired_sessions = None
+create_user = None
+get_user_by_email = None
+save_resume = None
+get_latest_resume = None
+cleanup_expired_resumes = None
+save_profile = None
+get_profile = None
+delete_profile = None
+save_application_state = None
+get_application_state = None
+delete_application_state = None
+save_statistics = None
+get_statistics = None
+delete_statistics = None
+delete_all_user_data = None
+download_resume_from_gridfs = None
+save_screenshot = None
+get_latest_screenshot = None
+cleanup_expired_screenshots = None
+run_cleanup_tasks = None
+start_cleanup_scheduler = None
+stop_cleanup_scheduler = None
+
 try:
     from common.profile import Profile
     from common import llm
@@ -49,8 +80,8 @@ try:
         get_latest_screenshot, cleanup_expired_screenshots, run_cleanup_tasks, 
         start_cleanup_scheduler, stop_cleanup_scheduler
     )
-except ImportError:
-    print("Warning: Some common modules not available. Running in standalone mode.")
+except ImportError as e:
+    print(f"Warning: Some common modules not available. Running in standalone mode. Error: {e}")
 
 app = Flask(__name__)
 CORS(app)
@@ -101,13 +132,17 @@ automation_running = False
 automation_thread = None
 automation_process = None
 
-# Initialize database on startup
-try:
-    init_database()
-    # Start the cleanup scheduler
-    start_cleanup_scheduler()
-except Exception as e:
-    print(f"Warning: Database initialization failed: {e}")
+# Initialize database on startup (only if available)
+if init_database:
+    try:
+        init_database()
+        # Start the cleanup scheduler
+        if start_cleanup_scheduler:
+            start_cleanup_scheduler()
+    except Exception as e:
+        print(f"Warning: Database initialization failed: {e}")
+else:
+    print("Warning: Database module not available - running without database")
 
 # User management (simplified - single user for now)
 CURRENT_USER_ID = "default_user"  # Will be replaced with actual user authentication later
