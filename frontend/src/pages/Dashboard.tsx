@@ -198,39 +198,39 @@ const Dashboard = () => {
   // Login Form Modal
   if (showLoginForm) {
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-8 max-w-md w-full mx-4">
-          <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Connect Naukri Account</h2>
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
+        <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl border border-white/20 dark:border-gray-700/50 animate-slide-up">
+          <h2 className="text-3xl font-bold mb-6 gradient-text">Connect Naukri Account</h2>
           <form onSubmit={handleLoginSubmit}>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <div className="mb-5">
+              <label className="label">
                 Email / Username
               </label>
               <input
                 type="text"
                 value={loginData.email}
                 onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="input"
                 placeholder="Enter your Naukri email or username"
                 required
               />
             </div>
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="label">
                 Password
               </label>
               <input
                 type="password"
                 value={loginData.password}
                 onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="input"
                 placeholder="Enter your Naukri password"
                 required
               />
             </div>
-            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-6">
+            <div className="bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4 mb-6">
               <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                <strong>Security Note:</strong> Your credentials are used only to create a secure session.
+                <strong className="font-semibold">Security Note:</strong> Your credentials are used only to create a secure session.
                 They are never stored and will be deleted immediately after login.
               </p>
             </div>
@@ -241,14 +241,14 @@ const Dashboard = () => {
                   setShowLoginForm(false);
                   setLoginData({ email: '', password: '' });
                 }}
-                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white"
+                className="flex-1 btn btn-secondary text-gray-900 dark:text-white"
                 disabled={loginLoading}
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50"
+                className="flex-1 btn btn-primary"
                 disabled={loginLoading}
               >
                 {loginLoading ? 'Logging in...' : 'Connect & Start'}
@@ -261,31 +261,33 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="p-8">
+    <div className="p-8 animate-fade-in">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">Monitor your job application automation</p>
+        <h1 className="text-4xl font-bold gradient-text text-shadow-lg">Dashboard</h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-2 text-lg">Monitor your job application automation</p>
       </div>
 
       {/* Session Status Card */}
-      <div className="card mb-6">
+      <div className="card-gradient mb-6 animate-slide-up">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            {sessionStatus?.connected ? (
-              <CheckCircle className="w-8 h-8 text-green-600 mr-4" />
-            ) : (
-              <XCircle className="w-8 h-8 text-red-600 mr-4" />
-            )}
+            <div className={`p-3 rounded-xl mr-4 ${sessionStatus?.connected ? 'bg-green-100 dark:bg-green-900/30' : 'bg-red-100 dark:bg-red-900/30'}`}>
+              {sessionStatus?.connected ? (
+                <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
+              ) : (
+                <XCircle className="w-8 h-8 text-red-600 dark:text-red-400" />
+              )}
+            </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Naukri Account Status</h3>
-              <p className="text-gray-600 dark:text-gray-400">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">Naukri Account Status</h3>
+              <p className={`text-lg font-medium mt-1 ${sessionStatus?.connected ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                 {sessionStatus?.connected ? 'Connected' : 'Not Connected'}
               </p>
               {!sessionStatus?.connected && (
-                <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
                   {!resumeStatus?.has_resume ? (
                     <>
-                      <span className="text-yellow-600 font-medium">Step 1:</span> Upload your resume first
+                      <span className="text-yellow-600 dark:text-yellow-400 font-semibold">Step 1:</span> Upload your resume first
                     </>
                   ) : (
                     'Login to start automated job applications'
@@ -293,7 +295,8 @@ const Dashboard = () => {
                 </p>
               )}
               {sessionStatus?.connected && sessionStatus.time_remaining_seconds && (
-                <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                  <Clock className="w-4 h-4 inline mr-1" />
                   Expires in: {formatTimeRemaining(sessionStatus.time_remaining_seconds)}
                 </p>
               )}
@@ -322,31 +325,35 @@ const Dashboard = () => {
       </div>
 
       {/* Resume Status Card */}
-      <div className="card mb-6">
+      <div className="card-gradient mb-6 animate-slide-up" style={{ animationDelay: '0.1s' }}>
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            {resumeStatus?.has_resume ? (
-              <CheckCircle className="w-8 h-8 text-green-600 mr-4" />
-            ) : (
-              <FileText className="w-8 h-8 text-yellow-600 mr-4" />
-            )}
+            <div className={`p-3 rounded-xl mr-4 ${resumeStatus?.has_resume ? 'bg-green-100 dark:bg-green-900/30' : 'bg-yellow-100 dark:bg-yellow-900/30'}`}>
+              {resumeStatus?.has_resume ? (
+                <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
+              ) : (
+                <FileText className="w-8 h-8 text-yellow-600 dark:text-yellow-400" />
+              )}
+            </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Resume Status</h3>
-              <p className="text-gray-600 dark:text-gray-400">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">Resume Status</h3>
+              <p className={`text-lg font-medium mt-1 ${resumeStatus?.has_resume ? 'text-green-600 dark:text-green-400' : 'text-yellow-600 dark:text-yellow-400'}`}>
                 {resumeStatus?.has_resume ? 'Resume uploaded and profile populated' : 'No resume uploaded'}
               </p>
               {!resumeStatus?.has_resume && (
-                <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
                   Upload your resume to extract skills, experience, and job roles
                 </p>
               )}
               {resumeStatus?.has_resume && resumeStatus?.profile && (
                 <>
-                  <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
+                    <Briefcase className="w-4 h-4 inline mr-1" />
                     {resumeStatus.profile.skills?.length || 0} skills extracted
                   </p>
                   {resumeStatus.resume_filename && (
                     <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                      <FileText className="w-4 h-4 inline mr-1" />
                       File: {resumeStatus.resume_filename}
                     </p>
                   )}
@@ -369,17 +376,19 @@ const Dashboard = () => {
       <RealTimeProgress />
 
       {/* Automation Control */}
-      <div className="card bg-white dark:bg-gray-800 mb-6">
+      <div className="card-gradient mb-6 animate-slide-up" style={{ animationDelay: '0.2s' }}>
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            {automationRunning ? (
-              <Play className="w-8 h-8 text-green-600 mr-4" />
-            ) : (
-              <StopCircle className="w-8 h-8 text-gray-600 mr-4" />
-            )}
+            <div className={`p-3 rounded-xl mr-4 ${automationRunning ? 'bg-green-100 dark:bg-green-900/30 animate-pulse-slow' : 'bg-gray-100 dark:bg-gray-700/30'}`}>
+              {automationRunning ? (
+                <Play className="w-8 h-8 text-green-600 dark:text-green-400" />
+              ) : (
+                <StopCircle className="w-8 h-8 text-gray-600 dark:text-gray-400" />
+              )}
+            </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Automation Status</h3>
-              <p className="text-gray-600 dark:text-gray-400">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">Automation Status</h3>
+              <p className={`text-lg font-medium mt-1 ${automationRunning ? 'text-green-600 dark:text-green-400' : 'text-gray-600 dark:text-gray-400'}`}>
                 {automationRunning ? 'Running' : 'Stopped'}
               </p>
             </div>
@@ -408,45 +417,53 @@ const Dashboard = () => {
       {/* Statistics Grid */}
       {stats && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6">
-          <div className="card bg-white dark:bg-gray-800">
+          <div className="stat-card animate-slide-up" style={{ animationDelay: '0.3s' }}>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Jobs Found</p>
-                <p className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">{stats.total_seen || 0}</p>
+                <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">Jobs Found</p>
+                <p className="text-3xl lg:text-4xl font-bold gradient-text">{stats.total_seen || 0}</p>
               </div>
-              <Briefcase className="w-6 h-6 lg:w-8 lg:h-8 text-primary-600" />
+              <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
+                <Briefcase className="w-6 h-6 lg:w-8 lg:h-8 text-blue-600 dark:text-blue-400" />
+              </div>
             </div>
           </div>
 
-          <div className="card bg-white dark:bg-gray-800">
+          <div className="stat-card animate-slide-up" style={{ animationDelay: '0.4s' }}>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Applications</p>
-                <p className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">{stats.total_applied || 0}</p>
+                <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">Applications</p>
+                <p className="text-3xl lg:text-4xl font-bold text-green-600 dark:text-green-400">{stats.total_applied || 0}</p>
               </div>
-              <TrendingUp className="w-6 h-6 lg:w-8 lg:h-8 text-green-600" />
+              <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-xl">
+                <TrendingUp className="w-6 h-6 lg:w-8 lg:h-8 text-green-600 dark:text-green-400" />
+              </div>
             </div>
           </div>
 
-          <div className="card bg-white dark:bg-gray-800">
+          <div className="stat-card animate-slide-up" style={{ animationDelay: '0.5s' }}>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Skipped</p>
-                <p className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">{stats.total_skipped || 0}</p>
+                <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">Skipped</p>
+                <p className="text-3xl lg:text-4xl font-bold text-yellow-600 dark:text-yellow-400">{stats.total_skipped || 0}</p>
               </div>
-              <AlertCircle className="w-6 h-6 lg:w-8 lg:h-8 text-yellow-600" />
+              <div className="p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-xl">
+                <AlertCircle className="w-6 h-6 lg:w-8 lg:h-8 text-yellow-600 dark:text-yellow-400" />
+              </div>
             </div>
           </div>
 
-          <div className="card bg-white dark:bg-gray-800">
+          <div className="stat-card animate-slide-up" style={{ animationDelay: '0.6s' }}>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Success Rate</p>
-                <p className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
+                <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">Success Rate</p>
+                <p className="text-3xl lg:text-4xl font-bold text-indigo-600 dark:text-indigo-400">
                   {stats.success_rate ? stats.success_rate.toFixed(1) : 0}%
                 </p>
               </div>
-              <Clock className="w-6 h-6 lg:w-8 lg:h-8 text-blue-600" />
+              <div className="p-3 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl">
+                <Clock className="w-6 h-6 lg:w-8 lg:h-8 text-indigo-600 dark:text-indigo-400" />
+              </div>
             </div>
           </div>
         </div>
@@ -456,18 +473,18 @@ const Dashboard = () => {
       {stats && <StatisticsCharts stats={stats} />}
 
       {/* Quick Actions */}
-      <div className="card bg-white dark:bg-gray-800">
-        <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Quick Actions</h3>
+      <div className="card-gradient mb-6 animate-slide-up" style={{ animationDelay: '0.7s' }}>
+        <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Quick Actions</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <button className="btn btn-secondary w-full text-gray-900 dark:text-white">
+          <a href="/applications" className="btn btn-secondary w-full text-gray-900 dark:text-white">
             View Application History
-          </button>
-          <button className="btn btn-secondary w-full text-gray-900 dark:text-white">
+          </a>
+          <a href="/profile" className="btn btn-secondary w-full text-gray-900 dark:text-white">
             Update Profile
-          </button>
-          <button className="btn btn-secondary w-full text-gray-900 dark:text-white">
+          </a>
+          <a href="/preferences" className="btn btn-secondary w-full text-gray-900 dark:text-white">
             Configure Job Preferences
-          </button>
+          </a>
         </div>
       </div>
 

@@ -72,20 +72,22 @@ const Resume = () => {
   };
 
   return (
-    <div className="p-8">
+    <div className="p-8 animate-fade-in">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Resume</h1>
-        <p className="text-gray-600 mt-1">Upload and parse your resume</p>
+        <h1 className="text-4xl font-bold gradient-text text-shadow-lg">Resume</h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-2 text-lg">Upload and parse your resume</p>
       </div>
 
       {!parsedData ? (
-        <div className="card max-w-2xl">
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
-            <Upload className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-            <p className="text-lg font-medium text-gray-700 mb-2">
+        <div className="card-gradient max-w-2xl animate-slide-up">
+          <div className="border-2 border-dashed border-blue-300 dark:border-blue-700 rounded-2xl p-12 text-center bg-gradient-to-br from-blue-50/50 to-indigo-50/50 dark:from-blue-900/20 dark:to-indigo-900/20 hover:border-blue-400 dark:hover:border-blue-600 transition-all duration-300">
+            <div className="p-4 bg-blue-100 dark:bg-blue-900/30 rounded-xl inline-block mb-4">
+              <Upload className="w-16 h-16 mx-auto text-blue-600 dark:text-blue-400" />
+            </div>
+            <p className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
               Drag & drop your resume here
             </p>
-            <p className="text-gray-500 mb-4">or click to browse</p>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">or click to browse</p>
             <input
               type="file"
               accept=".pdf,.doc,.docx"
@@ -99,17 +101,19 @@ const Resume = () => {
             >
               Browse Files
             </label>
-            <p className="text-sm text-gray-500 mt-4">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
               Supported formats: PDF, DOC, DOCX
             </p>
           </div>
 
           {file && (
-            <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+            <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <FileText className="w-5 h-5 text-gray-600 mr-3" />
-                  <span className="font-medium">{file.name}</span>
+                  <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg mr-3">
+                    <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <span className="font-semibold text-gray-900 dark:text-white">{file.name}</span>
                 </div>
                 <button
                   onClick={handleUpload}
@@ -123,10 +127,10 @@ const Resume = () => {
           )}
         </div>
       ) : (
-        <div className="card max-w-4xl">
+        <div className="card-gradient max-w-4xl animate-slide-up">
           <div className="mb-6">
-            <h3 className="text-xl font-semibold">Review Extracted Information</h3>
-            <p className="text-gray-600">Review and edit the extracted information before saving</p>
+            <h3 className="text-2xl font-bold gradient-text">Review Extracted Information</h3>
+            <p className="text-gray-600 dark:text-gray-400 mt-1">Review and edit the extracted information before saving</p>
           </div>
 
           <div className="space-y-6">
@@ -230,7 +234,7 @@ const Resume = () => {
               />
             </div>
 
-            <div className="flex justify-end space-x-4">
+            <div className="flex justify-end space-x-4 mt-8">
               <button
                 onClick={handleReject}
                 className="btn btn-secondary"
