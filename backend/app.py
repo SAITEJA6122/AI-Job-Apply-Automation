@@ -83,6 +83,61 @@ try:
     )
 except ImportError as e:
     print(f"Warning: Some common modules not available. Running in standalone mode. Error: {e}")
+    
+    # SQLite fallback implementations for critical functions
+    def get_active_session(user_id):
+        """Get active session from SQLite."""
+        conn = sqlite3.connect(DATABASE_PATH)
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT session_id, created_at, expires_at, status, browser_profile_path, session_file_path
+            FROM naukri_sessions
+            WHERE user_id = ? AND expires_at > ? AND status = 'active'
+            ORDER BY created_at DESC
+            LIMIT 1
+        ''', (user_id, datetime.now()))
+        row = cursor.fetchone()
+        conn.close()
+        if row:
+            return {
+                'session_id': row[0],
+                'created_at': datetime.fromisoformat(row[1]) if isinstance(row[1], str) else row[1],
+                'expires_at': datetime.fromisoformat(row[2]) if isinstance(row[2], str) else row[2],
+                'status': row[3],
+                'browser_profile_path': row[4],
+                'session_file_path': row[5]
+            }
+        return None
+    
+    def get_profile(user_id):
+        """Get profile from YAML file."""
+        if PROFILE_FILE.exists():
+            with open(PROFILE_FILE, 'r') as f:
+                return yaml.safe_load(f)
+        return None
+    
+    def get_latest_resume(user_id):
+        """Get latest resume from SQLite."""
+        conn = sqlite3.connect(DATABASE_PATH)
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT filename, original_filename, file_path, parsed_data, uploaded_at
+            FROM resumes
+            WHERE user_id = ?
+            ORDER BY uploaded_at DESC
+            LIMIT 1
+        ''', (user_id,))
+        row = cursor.fetchone()
+        conn.close()
+        if row:
+            return {
+                'filename': row[0],
+                'original_filename': row[1],
+                'file_path': row[2],
+                'parsed_data': json.loads(row[3]) if row[3] else None,
+                'uploaded_at': row[4]
+            }
+        return None
 
 app = Flask(__name__)
 CORS(app)
@@ -145,6 +200,7 @@ def init_sqlite_database():
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS naukri_sessions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id TEXT NOT NULL,
             session_id TEXT UNIQUE NOT NULL,
             created_at TIMESTAMP NOT NULL,
             expires_at TIMESTAMP NOT NULL,
