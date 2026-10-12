@@ -57,6 +57,11 @@ from common.human_behavior import (
     random_application_delay,
     enhanced_page_navigation,
     setup_human_like_context,
+    simulate_tab_switching,
+    simulate_reading_pattern,
+    random_hover_action,
+    simulate_idle_time,
+    variable_rate_limit,
 )
 
 SESSION_FILE = "session_naukri.json"
@@ -1216,18 +1221,27 @@ def run():
                                 log_row([datetime.now(), "naukri", card.get("title"),
                                           card.get("company"), "dry_run_applied", "", ""])
                                 print(f"[DRY-RUN] Applied: {card.get('title')} @ {card.get('company')} ({applied} total)")
-                                random_delay(delay_min, delay_max, "next application")
+                                # Variable rate limiting between applications (anti-detection)
+                                variable_rate_limit(delay_min, delay_max)
                                 continue
 
                             state_machine.transition_record(card.get("jobId"), ApplicationState.OPENED)
+                            
+                            # Simulate idle time before opening job (anti-detection)
+                            simulate_idle_time(1.0, 3.0)
                             
                             # Navigate to job page with retry
                             def navigate_to_job():
                                 enhanced_page_navigation(page, card["href"])
                                 random_delay(2, 3, "page navigation")
                                 # Random mouse movement for natural behavior
-                                if random.random() < 0.3:
+                                if random.random() < 0.4:
                                     random_mouse_movement(page)
+                                # Simulate reading the job description
+                                simulate_reading_pattern(page, 800)
+                                # Random hover to simulate exploration
+                                if random.random() < 0.3:
+                                    random_hover_action(page)
                                 # Capture screenshot after navigation if enabled
                                 if enable_screen_capture:
                                     _save_live_screenshot(page, screenshots_dir)
@@ -1268,7 +1282,8 @@ def run():
                                           card.get("company"), "skipped", "apply button click didn't register", "ui_element"])
                                 print(f"Skipped: {card.get('title')} @ {card.get('company')} — apply click didn't register")
                                 continue
-                            random_delay(2, 3, "after apply click")
+                            # Variable rate limiting after apply click (anti-detection)
+                            variable_rate_limit(2.0, 4.0)
 
                             # Capture screenshot after apply click if enabled
                             if enable_screen_capture:
@@ -1277,7 +1292,8 @@ def run():
                             state_machine.transition_record(card.get("jobId"), ApplicationState.SCREENING)
                             answer_screening_chat(page, profile, f"{card.get('title')} at {card.get('company')}",
                                                    human_timeout)
-                            random_delay(1, 2, "after screening chat")
+                            # Variable delay after screening (anti-detection)
+                            variable_rate_limit(1.0, 2.5)
 
                             state_machine.transition_record(card.get("jobId"), ApplicationState.SUBMISSION_ATTEMPTED)
                             
@@ -1290,6 +1306,9 @@ def run():
                                     log_row([datetime.now(), "naukri", card.get("title"),
                                               card.get("company"), "applied", "", ""])
                                     print(f"Applied: {card.get('title')} @ {card.get('company')} ({applied} total)")
+                                    # Simulate tab switching after successful application (anti-detection)
+                                    if random.random() < 0.3:
+                                        simulate_tab_switching(page, 1, 2)
                                 else:
                                     state_machine.transition_record(card.get("jobId"), ApplicationState.FAILED, "limit reached", "limit")
                                     print(f"Limit reached after submission: {card.get('title')} @ {card.get('company')}")
