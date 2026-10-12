@@ -2,29 +2,7 @@ import { useState, useEffect } from 'react';
 import apiService from '../services/api';
 import type { Profile } from '../types';
 import { toast } from 'react-toastify';
-import { Plus } from 'lucide-react';
-
-const TARGET_ROLES = [
-  'Full Stack Developer',
-  'MERN Stack Developer',
-  'React Developer',
-  'Node.js Developer',
-  'Frontend Developer',
-  'Software Developer',
-  'Software Engineer',
-  'Web Developer',
-  'Junior Software Developer',
-  'Junior Software Engineer',
-  'Junior Full Stack Developer',
-  'Associate Software Engineer',
-  'Associate Developer',
-  'Graduate Software Engineer',
-  'Trainee Software Engineer',
-  'Frontend Engineer',
-  'React.js Developer',
-  'JavaScript Developer',
-  'Backend Developer',
-];
+import { Plus, X } from 'lucide-react';
 
 const JobPreferences = () => {
   const [profile, setProfile] = useState<Profile>({});
@@ -81,21 +59,6 @@ const JobPreferences = () => {
     }
   };
 
-  const handleToggleRole = (role: string) => {
-    const currentRoles = profile.target_roles || [];
-    if (currentRoles.includes(role)) {
-      setProfile(prev => ({
-        ...prev,
-        target_roles: currentRoles.filter(r => r !== role)
-      }));
-    } else {
-      setProfile(prev => ({
-        ...prev,
-        target_roles: [...currentRoles, role]
-      }));
-    }
-  };
-
   const handleAddCustomRole = () => {
     if (customRole.trim()) {
       const currentRoles = profile.target_roles || [];
@@ -122,45 +85,45 @@ const JobPreferences = () => {
   }
 
   return (
-    <div className="p-8">
+    <div className="p-8 animate-fade-in">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Job Preferences</h1>
-        <p className="text-gray-600 mt-1">Configure your job search preferences</p>
+        <h1 className="text-4xl font-bold gradient-text text-shadow-lg">Job Preferences</h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-2 text-lg">Configure your job search preferences</p>
       </div>
 
-      <div className="card max-w-4xl">
+      <div className="card-gradient max-w-4xl animate-slide-up">
         <div className="space-y-6">
           {/* Target Roles */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Target Roles</h3>
-            <p className="text-sm text-gray-600 mb-4">Select from predefined roles or add custom ones</p>
+            <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Target Roles</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Roles automatically extracted from your resume. Add missing roles if needed.
+            </p>
 
-            {/* Predefined Roles */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
-              {TARGET_ROLES.map((role) => {
-                const isSelected = (profile.target_roles || []).includes(role);
-                return (
+            {/* Roles from Resume */}
+            <div className="flex flex-wrap gap-2 mb-4">
+              {(profile.target_roles || []).map((role) => (
+                <div
+                  key={role}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 text-blue-700 dark:text-blue-300 rounded-full border border-blue-200 dark:border-blue-700"
+                >
+                  {role}
                   <button
-                    key={role}
-                    onClick={() => handleToggleRole(role)}
-                    className={`p-3 rounded-lg border-2 transition-colors ${
-                      isSelected
-                        ? 'border-primary-600 bg-primary-50 text-primary-700'
-                        : 'border-gray-300 hover:border-gray-400'
-                    }`}
+                    onClick={() => handleRemoveCustomRole(role)}
+                    className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-200"
                   >
-                    {role}
+                    <X className="w-4 h-4" />
                   </button>
-                );
-              })}
+                </div>
+              ))}
             </div>
 
             {/* Add Custom Role */}
-            <div className="flex gap-2 mb-4">
+            <div className="flex gap-2">
               <input
                 type="text"
                 className="input flex-1"
-                placeholder="Add custom role (e.g., Angular Developer)"
+                placeholder="Add missing role (e.g., Angular Developer)"
                 value={customRole}
                 onChange={(e) => setCustomRole(e.target.value)}
                 onKeyPress={(e) => {
@@ -177,34 +140,11 @@ const JobPreferences = () => {
                 Add
               </button>
             </div>
-
-            {/* Selected Roles Display */}
-            {(profile.target_roles || []).length > 0 && (
-              <div className="mt-4">
-                <h4 className="text-sm font-medium text-gray-700 mb-2">Selected Roles:</h4>
-                <div className="flex flex-wrap gap-2">
-                  {(profile.target_roles || []).map((role) => (
-                    <div
-                      key={role}
-                      className="inline-flex items-center gap-2 px-3 py-1 bg-primary-100 text-primary-700 rounded-full"
-                    >
-                      {role}
-                      <button
-                        onClick={() => handleRemoveCustomRole(role)}
-                        className="text-primary-500 hover:text-primary-700"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Experience Range */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Experience Range</h3>
+            <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Experience Range</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="label">Minimum Experience (Years)</label>
@@ -235,7 +175,7 @@ const JobPreferences = () => {
 
           {/* Location Preferences */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Location Preferences</h3>
+            <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Location Preferences</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="label">Preferred Locations (comma-separated)</label>
@@ -249,7 +189,7 @@ const JobPreferences = () => {
                   }))}
                 />
               </div>
-              <div className="flex items-center">
+              <div className="flex items-center p-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-200 dark:border-blue-700">
                 <input
                   type="checkbox"
                   id="relocate"
@@ -258,9 +198,9 @@ const JobPreferences = () => {
                     ...prev, 
                     relocate_cities: e.target.checked 
                   }))}
-                  className="mr-2"
+                  className="mr-3 w-5 h-5"
                 />
-                <label htmlFor="relocate" className="text-gray-700">
+                <label htmlFor="relocate" className="text-gray-900 dark:text-white font-medium">
                   Willing to relocate
                 </label>
               </div>
@@ -269,7 +209,7 @@ const JobPreferences = () => {
 
           {/* Salary Preferences */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Salary Preferences</h3>
+            <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Salary Preferences</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="label">Minimum CTC (LPA)</label>
@@ -302,9 +242,9 @@ const JobPreferences = () => {
 
           {/* Work Preferences */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Work Preferences</h3>
+            <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Work Preferences</h3>
             <div className="space-y-3">
-              <div className="flex items-center">
+              <div className="flex items-center p-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-200 dark:border-blue-700">
                 <input
                   type="checkbox"
                   id="night-shift"
@@ -313,13 +253,13 @@ const JobPreferences = () => {
                     ...prev, 
                     night_shift_ok: e.target.checked 
                   }))}
-                  className="mr-2"
+                  className="mr-3 w-5 h-5"
                 />
-                <label htmlFor="night-shift" className="text-gray-700">
+                <label htmlFor="night-shift" className="text-gray-900 dark:text-white font-medium">
                   Willing to work night shifts
                 </label>
               </div>
-              <div className="flex items-center">
+              <div className="flex items-center p-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-200 dark:border-blue-700">
                 <input
                   type="checkbox"
                   id="weekend"
@@ -328,9 +268,9 @@ const JobPreferences = () => {
                     ...prev, 
                     weekend_ok: e.target.checked 
                   }))}
-                  className="mr-2"
+                  className="mr-3 w-5 h-5"
                 />
-                <label htmlFor="weekend" className="text-gray-700">
+                <label htmlFor="weekend" className="text-gray-900 dark:text-white font-medium">
                   Willing to work weekends
                 </label>
               </div>
@@ -338,7 +278,7 @@ const JobPreferences = () => {
           </div>
 
           {/* Save Button */}
-          <div className="flex justify-end">
+          <div className="flex justify-end pt-4">
             <button
               onClick={handleSave}
               disabled={saving}
