@@ -1,8 +1,8 @@
 import axios from 'axios';
 import type { Profile, SessionStatus, ParsedResumeData, Application, Statistics } from '../types';
 
-// Use environment variable for API base URL, fallback to /api for local development
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+// Use environment variable for API base URL, fallback to production backend
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://ai-job-apply-automation-1.onrender.com/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
