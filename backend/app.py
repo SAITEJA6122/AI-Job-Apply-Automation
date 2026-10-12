@@ -399,9 +399,9 @@ def connect_naukri():
             conn = sqlite3.connect(DATABASE_PATH)
             cursor = conn.cursor()
             cursor.execute('''
-                INSERT INTO naukri_sessions (session_id, created_at, expires_at, status, session_file_path)
-                VALUES (?, ?, ?, ?, ?)
-            ''', (session_id, created_at, expires_at, 'connected', str(SESSION_FILE)))
+                INSERT INTO naukri_sessions (session_id, user_id, created_at, expires_at, status, session_file_path)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ''', (session_id, CURRENT_USER_ID, created_at, expires_at, 'connected', str(SESSION_FILE)))
             conn.commit()
             conn.close()
 
@@ -530,9 +530,9 @@ def login_naukri():
                 conn = sqlite3.connect(DATABASE_PATH)
                 cursor = conn.cursor()
                 cursor.execute('''
-                    INSERT INTO naukri_sessions (session_id, created_at, expires_at, status, session_file_path)
-                    VALUES (?, ?, ?, ?, ?)
-                ''', (session_id, created_at, expires_at, 'connected', str(SESSION_FILE)))
+                    INSERT INTO naukri_sessions (session_id, user_id, created_at, expires_at, status, session_file_path)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                ''', (session_id, CURRENT_USER_ID, created_at, expires_at, 'connected', str(SESSION_FILE)))
                 conn.commit()
                 conn.close()
 
